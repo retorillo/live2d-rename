@@ -30,9 +30,9 @@ live2d-rename --src .\foo --dist .\bar
 ```
 
 - `--src` (or `-s`, `--source`) [Mandatory] Specify source directory 
-- `--dest` (or `-d`, `--destination) [Mandatory] Specify destinatoin directory (new name)
+- `--dest` (or `-d`, `--destination`) [Mandatory] Specify destination directory (new name)
 - `--force` (or `-f`) [Optional] Skip confirmation to remove destination directory during operation
-- `--no-dupl` (or `-N`, `-nd`, `--no-duplication`) [Optional] Source directory will be removed after renamed (NOT RECOMMENDED BEFORE TEST)
+- `--no-dupl` (or `-N`, `--no-duplication`) [Optional] Source directory will be removed after renamed (NOT RECOMMENDED BEFORE TEST)
 - `--install` (or `-I`) [Optional, Experimantal] Install destination content to FaceRig
 
 ## License
