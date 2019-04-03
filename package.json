@@ -1,0 +1,21 @@
+{
+  "name": "live2d-rename",
+  "version": "1.0.0",
+  "description": "Rename live2d avator directory and its content",
+  "main": "bin/cli.js",
+  "bin": {
+    "live2d-rename": "bin/cli.js"
+  },
+  "dependencies": {
+    "chardet": "^0.7.0",
+    "copy-dir": "^0.4.0",
+    "deep-key": "^0.9.9",
+    "del": "^4.1.0",
+    "delete-empty": "^2.0.0",
+    "escape-string-regexp": "^1.0.5",
+    "glob": "^7.1.3",
+    "gnu-option": "^1.0.1",
+    "iconv-lite": "^0.4.24",
+    "path-exists": "^3.0.0"
+  }
+}
