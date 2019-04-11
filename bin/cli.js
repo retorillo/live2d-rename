@@ -2,6 +2,7 @@
 
 const fs = require('fs').promises;
 const os = require('os');
+const cpexec = require('util').promisify(require('child_process').exec);
 const deepkey = require('deep-key');
 const deleteEmpty = require('delete-empty');
 const glob = require('glob');
@@ -25,6 +26,8 @@ const optmap = {
   'no-duplication': 'switch',
   'f': '&force',
   'force': 'switch',
+  'i': '&icon-label',
+  'icon-label': 'switch',
   'I': '&install',
   'install': 'switch',
 };
@@ -116,12 +119,34 @@ async function handleJson(dir, before, after, ext) {
   console.log(`${after}${ext} is replaced (${count} string objects)`);
   return affectedItems;
 }
-async function handleIcon(dir, before, after) {
+async function handleIcon(dir, before, after, iconlabel) {
   var beforepath = path.join(dir, `ico_${before}.png`);
   var afterpath = path.join(dir, `ico_${after}.png`);
   if (!await exists(beforepath)) { 
     console.log(`[WARNING] ico_${before}.png is not found, operation is skipped`);
     return;
+  }
+  var lbl = /([a-z0-9]*)$/.exec(after);
+  if (lbl && iconlabel) {
+    lbl = lbl[1];
+    var lblpath = path.join(dir, `ico_${before}_lbl.png`);
+    var bkgpath = path.join(dir, `ico_${before}_bkg.png`);
+    var cmp1path = path.join(dir, `ico_${before}_cmp1.png`);
+    var cmp2path = path.join(dir, `ico_${before}_cmp2.png`);
+    const pt = 32;
+    const padding = '8x8';
+    await cpexec(`magick convert -background transparent -fill white -family "courier new"`
+      + ` -gravity southeast -splice ${padding} -gravity northwest -splice ${padding}`
+      + ` -pointsize ${pt} label:"${lbl}" "${lblpath}"`);
+    await cpexec(`magick convert "${lblpath}" -fill black -draw "color 0,0 reset" "${bkgpath}"`);
+    await cpexec(`magick composite -gravity southwest -geometry +0+8 -blend 50 "${bkgpath}" "${beforepath}" "${cmp1path}"`);
+    await cpexec(`magick composite -gravity southwest -geometry +0+8 "${lblpath}" "${cmp1path}" "${cmp2path}"`);
+    fs.unlink(cmp1path);
+    fs.unlink(lblpath);
+    fs.unlink(bkgpath);
+    await fs.unlink(beforepath);
+    await fs.rename(cmp2path, beforepath);
+    console.log(`ico_${before}.png is labeled: ${lbl}`);
   }
   await fs.rename(beforepath, afterpath);
   console.log(`ico_${before}.png is renamed to ico_${after}.png`);
@@ -138,6 +163,7 @@ async function exec() {
   var dest = options.destination;
   var force = options.force;
   var nodupl = options['no-duplication'];
+  var iconlabel = options['icon-label'];
   var inst = options.install;
 
   if (!src)
@@ -171,7 +197,7 @@ async function exec() {
 
   await handleCfg(dest, before, after, 'cc_');
   await handleCfg(dest, before, after, 'cc_names_');
-  await handleIcon(dest, before, after);
+  await handleIcon(dest, before, after, iconlabel);
   await deleteEmpty(dest);
 
   if (nodupl) {
