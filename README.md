@@ -27,7 +27,7 @@ npm link
 ## Usage
 
 ```
-live2d-rename --src .\foo --dist .\bar
+live2d-rename --src .\foo --dest .\bar
 ```
 
 - `--src` (or `-s`, `--source`) [Mandatory] Specify source directory 
